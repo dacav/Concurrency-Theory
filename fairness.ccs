@@ -1,0 +1,5 @@
+prop Finally(P) = min( Z . P | <->Z );
+prop Globally(P) = max( Z . P & [-]Z );
+
+prop Fair(cause, effect) = Globally(<cause>F | Finally(<effect>T));
+

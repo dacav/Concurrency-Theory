@@ -304,7 +304,7 @@
         Now all ingredients for our recipe are ready. We just need to
         define the concurrent system, which is simply:
         \begin{verbatim}
-        agent System = ( P0 | P1 | B0 | B1 | Bk ) \ S;
+    agent System = ( P0 | P1 | B0 | B1 | Bk ) \ S;
         \end{verbatim}
         where \CCSCode{S} is the set of actions behaviors we want to
         restrict in order to allow only synchronizations between the
@@ -316,14 +316,29 @@
             };
         \end{verbatim}
 
-\section{Model checking}
+\section{Checking Safety}
 
-    \subsection{Safety}
+    For the \emph{safety} property we want to check that the two
+    processes cannot simultaneously be in the critical section.
+    This \emph{unwanted} behavior happens if and only if both
+    processes are allowed to have an \CCSCode{exit} action at the same
+    time.
 
-    \subsection{Liveness}
+    The protocol is safe if the following proposition holds for the
+    \CCSCode{System} agent:
+    \begin{verbatim}
+    prop Safety = max( Z . ([x0]F | [x1]F) & [-]Z );
+    \end{verbatim}
 
-    \subsection{Fairness}
+    The checking has been achieved successfully:
+    \begin{verbatim}
+    Command: input "dekker.ccs";
+    Command: prop Safety = max( Z . ([x0]F | [x1]F) & [-]Z );
+    Command: checkprop(System, Safety);
+    true
+
+    Would you like to play (and lose!) a game against the CWB? (y or n) n
+    \end{verbatim}
 
 \end{document}
-
 
