@@ -83,39 +83,24 @@
     \subsection{Encoding of the boolean variable abstraction}
     \label{sub:EncodeBool}
 
-        The variable consists in two main processes:
+        This abstraction consists in a simple process \Agent{Bool} which
+        models the behavior of a boolean variable setted to False. It can
+        be queried with a \CoAction{get} action (the \Action{false} action
+        will be produced) or setted to True by a \CoAction{set} action.
+
+        When the variable is setted to True the same behavior is adopted
+        with inverted logic so that a \CoAction{unset} action restores the
+        previous behavior.
 
         \begin{verbatim}
-    agent B0 (true, false, get, set, unset)
-        = 'set.B1(true,false,get,set,unset)
-        + 'get.false.B0(true,false,get,set,unset)
-        ;
-
-    agent B1 (true, false, get, set, unset)
-        = 'unset.B0(true,false,get,set,unset)
-        + 'get.true.B1(true,false,get,set,unset)
+    agent Bool (true, false, get, set, unset)
+        = 'set.Bool(false, true, get, unset, set)
+        + 'get.false.Bool(true, false, get, set, unset)
         ;
         \end{verbatim}
 
-        \begin{itemize}
-
-        \item   \Agent{B0} models the behavior of a boolean variable
-                setted to False. It can be queried with a \CoAction{get}
-                action (the \Action{false} action will be produced) or
-                setted to True by a \CoAction{set} action (the \Agent{B1}
-                behavior will be assumed);
-
-        \item   \Agent{B1} is the dual of \Agent{B0}, and models the
-                behavior of a boolean variable setted to True. As for
-                \Agent{B0} it can be queried with a \CoAction{get} action
-                (the \Action{true} action will be produced instead) or
-                setted to False by a \CoAction{unset} action (the
-                \Agent{B0} behavior will be assumed).
-
-        \end{itemize}
-
         Picture~\ref{pic:Bool} shows a graphical representation of the
-        boolean abstraction.
+        unwound boolean abstraction.
 
     \subsection{Encoding of the Dekker protocol abstraction}
 
@@ -175,11 +160,11 @@
             For convenience the protocol has been split into four
             processes:
             \begin{itemize}
-            \item   The first one (\Agent{P0}) is the starting point of
+            \item   The first one (\Agent{Proc}) is the starting point of
                     the protocol's main loop;
-            \item   The others (\Agent{P1}, \Agent{P2} and \Agent{P3}) are
-                    mapped on the three branching point of the algorithm,
-                    thus they work as explained in
+            \item   The others (\Agent{Proc1}, \Agent{Proc2} and
+                    \Agent{Proc3}) are mapped on the three branching point
+                    of the algorithm, thus they work as explained in
                     Paragraph~\ref{subsub:BranchingPoints}.
             \end{itemize}
 
@@ -191,11 +176,14 @@
             So far, after all this explanations, here we have the \CCS{}
             code:
             \begin{verbatim}
-    agent P0 = seti.P1;
-    agent P1 = getj.( 'truej.P2 + 'falsej.exiti.unsetk.unseti.P0 );
-    agent P2 = getk.( 'falsek.P1 + 'truek.unseti.P3 );
-    agent P3 = getk.( 'falsek.P3 + 'truek.seti.P1 );
+    agent Proc = seti.Proc1;
+    agent Proc1 = getj.( 'truej.Proc2 + 'falsej.exiti.unsetk.unseti.Proc0 );
+    agent Proc2 = getk.( 'falsek.Proc1 + 'truek.unseti.Proc3 );
+    agent Proc3 = getk.( 'falsek.Proc3 + 'truek.seti.Proc1 );
             \end{verbatim}
+
+            Picture~\ref{pic:Dekker} shows a graphical representation of the
+            Dekker protocol abstraction.
 
             \Note{
                 In the delivered definition the agents the actual
@@ -212,9 +200,6 @@
                     \end{itemize}
                 \end{multicols}
             }
-
-            Picture~\ref{pic:Dekker} shows a graphical representation of the
-            Dekker protocol abstraction.
 
     \begin{figure}[htbp]
         \centering
@@ -244,44 +229,44 @@
 
     \subsection{Boolean variable instantiation}
 
-        We need to define three boolean variables: \Agent{Bool0},
-        \Agent{Bool1} and \Agent{Boolk}.
+        We need to define three boolean variables: \Agent{B0},
+        \Agent{B1} and \Agent{Bk}.
 
         Basing on the requirements and naming conventions explained in
         Paragraph~\ref{subsub:ActualCode}, the parametrization is such
         that actions produced by boolean variable $b_i$ have $i$ as
         suffix:
         \begin{verbatim}
-    agent Bool0 = B0 (true0,false0,get0,set0,unset0);
-    agent Bool1 = B0 (true1,false1,get1,set1,unset1);
+    agent B0 = Bool (true0, false0, get0, set0, unset0);
+    agent B1 = Bool (true1, false1, get1, set1, unset1);
         \end{verbatim}
 
         The same must hold for the $k$ variable, but here also we want to
         have a non-deterministic assignment of the variable:
         \begin{verbatim}
-    agent Boolk = B1 (truek,falsek,getk,setk,unsetk)
-                + B0 (truek,falsek,getk,setk,unsetk);
+    agent Bk = Bool (truek, falsek, getk, unsetk, setk)
+             + Bool (falsek, truek, getk, setk, unsetk);
         \end{verbatim}
 
     \subsection{Processes instantiation}
 
-        We need also to define two processes \Agent{Proc0} and
-        \Agent{Proc1} which must behave accordingly to the logic defined
-        till now, thus:
+        Concerning processes, we need to define the two concurrent agents
+        \Agent{P0} and \Agent{P1} which must behave accordingly to
+        the logic defined till now:
         \begin{itemize}
 
         \item   The actions having the \CCSCode{i} suffix are referred to
                 the process itself, thus for example \CCSCode{seti}
-                becomes \CCSCode{set0} for \Agent{Proc0} and
-                \CCSCode{set1} for \Agent{Proc1};
+                becomes \CCSCode{set0} for \Agent{P0} and
+                \CCSCode{set1} for \Agent{P1};
 
         \item   The actions having the \CCSCode{j} suffix are referred to
                 the other process, thus for example \CCSCode{getj} becomes
-                \CCSCode{get1} for \Agent{Proc0} and \CCSCode{get0} for
-                \Agent{Proc1};
+                \CCSCode{get1} for \Agent{P0} and \CCSCode{get0} for
+                \Agent{P1};
 
         \item   The $k$ variable behaves in negated mode for one of the two
-                processe, namely for \Agent{Proc1}:
+                processes (we can arbitrarily choose \Agent{P1}):
 
             \begin{itemize}
 
@@ -296,21 +281,47 @@
 
         Follows the code:
         \begin{verbatim}
-    agent Proc0 = P0 (set0, get0, unset0,
-                      set1, get1, unset1,
-                      setk, getk, unsetk,
-                      true0, false0,
-                      true1, false1,
-                      truek, falsek,
-                      exit0);
+    agent P0 = Proc(set0, get0, unset0,
+                    set1, get1, unset1,
+                    setk, getk, unsetk,
+                    true0, false0,
+                    true1, false1,
+                    truek, falsek,
+                    exit0);
 
-    agent Proc0 = P0 (set1, get1, unset1,
-                      set0, get0, unset0,
-                      unsetk, getk, setk,
-                      true1, false1,
-                      true0, false0,
-                      falsek, truek,
-                      exit1);
+    agent P1 = Proc(set1, get1, unset1,
+                    set0, get0, unset0,
+                    unsetk, getk, setk,
+                    true1, false1,
+                    true0, false0,
+                    falsek, truek,
+                    exit1);
         \end{verbatim}
 
+\section{Final system}
+
+    Now all ingredients for our recipe are ready. We just need to define
+    the concurrent system, which is simply:
+    \begin{verbatim}
+    agent System = ( P0 | P1 | B0 | B1 | Bk ) \ S;
+    \end{verbatim}
+    where \CCSCode{S} is the set of actions behaviors we want to restrict
+    in order to allow only synchronizations between the processes:
+    \begin{verbatim}
+    set S = {   s0, g0, u0, t0, f0,
+            s1, g1, u1, t1, f1,
+            sk, gk, uk, tk, fk
+        };
+    \end{verbatim}
+
+\section{Model checking}
+
+    \subsection{Safety}
+
+    \subsection{Liveness}
+
+    \subsection{Fairness}
+
 \end{document}
+
+

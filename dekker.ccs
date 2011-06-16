@@ -1,52 +1,52 @@
-agent B0 (true, false, get, set, unset)
-    = 'set.B1(true,false,get,set,unset)
-    + 'get.false.B0(true,false,get,set,unset)
+* -- Abstract boolean variable specification ------------------------------
+
+agent Bool (true, false, get, set, unset)
+    = 'set.Bool(false, true, get, unset, set)
+    + 'get.false.Bool(true, false, get, set, unset)
     ;
 
-agent B1 (true, false, get, set, unset)
-    = 'unset.B0(true,false,get,set,unset)
-    + 'get.true.B1(true,false,get,set,unset)
+* -- Abstract protocol specification --------------------------------------
+
+agent Proc (si, gi, ui, sj, gj, uj, sk, gk, uk, ti, fi, tj, fj, tk, fk, xi)
+    = si.Proc1            (si,gi,ui,sj,gj,uj,sk,gk,uk,ti,fi,tj,fj,tk,fk,xi)
     ;
 
-* ----------------------- Protocol specification: -----------------------
-
-agent P0 (si, gi, ui, sj, gj, uj, sk, gk, uk, ti, fi, tj, fj, tk, fk, xi)
-    = si.P1             (si,gi,ui,sj,gj,uj,sk,gk,uk,ti,fi,tj,fj,tk,fk,xi)
-    ;
-
-agent P1 (si, gi, ui, sj, gj, uj, sk, gk, uk, ti, fi, tj, fj, tk, fk, xi)
+agent Proc1 (si, gi, ui, sj, gj, uj, sk, gk, uk, ti, fi, tj, fj, tk, fk, xi)
     = gj.(
-        'tj.P2          (si,gi,ui,sj,gj,uj,sk,gk,uk,ti,fi,tj,fj,tk,fk,xi)
-      + 'fj.xi.uk.ui.P0 (si,gi,ui,sj,gj,uj,sk,gk,uk,ti,fi,tj,fj,tk,fk,xi)
+        'tj.Proc2          (si,gi,ui,sj,gj,uj,sk,gk,uk,ti,fi,tj,fj,tk,fk,xi)
+      + 'fj.xi.uk.ui.Proc  (si,gi,ui,sj,gj,uj,sk,gk,uk,ti,fi,tj,fj,tk,fk,xi)
       )
     ;
 
-agent P2 (si, gi, ui, sj, gj, uj, sk, gk, uk, ti, fi, tj, fj, tk, fk, xi)
+agent Proc2 (si, gi, ui, sj, gj, uj, sk, gk, uk, ti, fi, tj, fj, tk, fk, xi)
     = gk.(
-        'fk.P1          (si,gi,ui,sj,gj,uj,sk,gk,uk,ti,fi,tj,fj,tk,fk,xi)
-      + 'tk.ui.P3       (si,gi,ui,sj,gj,uj,sk,gk,uk,ti,fi,tj,fj,tk,fk,xi)
+        'fk.Proc1          (si,gi,ui,sj,gj,uj,sk,gk,uk,ti,fi,tj,fj,tk,fk,xi)
+      + 'tk.ui.Proc3       (si,gi,ui,sj,gj,uj,sk,gk,uk,ti,fi,tj,fj,tk,fk,xi)
       )
     ;
 
-agent P3 (si, gi, ui, sj, gj, uj, sk, gk, uk, ti, fi, tj, fj, tk, fk, xi)
+agent Proc3 (si, gi, ui, sj, gj, uj, sk, gk, uk, ti, fi, tj, fj, tk, fk, xi)
     = gk.(
-        'fk.P3          (si,gi,ui,sj,gj,uj,sk,gk,uk,ti,fi,tj,fj,tk,fk,xi)
-      + 'tk.si.P1       (si,gi,ui,sj,gj,uj,sk,gk,uk,ti,fi,tj,fj,tk,fk,xi)
+        'fk.Proc3          (si,gi,ui,sj,gj,uj,sk,gk,uk,ti,fi,tj,fj,tk,fk,xi)
+      + 'tk.si.Proc1       (si,gi,ui,sj,gj,uj,sk,gk,uk,ti,fi,tj,fj,tk,fk,xi)
       )
     ;
 
-* ----------------------- Instantiation ---------------------------------
+* -- Instantiation --------------------------------------------------------
 
-agent Proc0 = P0 (s0,g0,u0,s1,g1,u1,sk,gk,uk,t0,f0,t1,f1,tk,fk,x0);
-agent Proc1 = P0 (s1,g1,u1,s0,g0,u0,uk,gk,sk,t1,f1,t0,f0,fk,tk,x1);
-agent Bool0 = B0 (t0,f0,g0,s0,u0);
-agent Bool1 = B0 (t1,f1,g1,s1,u1);
-agent Boolk = B1 (tk,fk,gk,sk,uk) + B0 (tk,fk,gk,sk,uk);
+agent P0 = Proc (s0,g0,u0,s1,g1,u1,sk,gk,uk,t0,f0,t1,f1,tk,fk,x0);
+agent P1 = Proc (s1,g1,u1,s0,g0,u0,uk,gk,sk,t1,f1,t0,f0,fk,tk,x1);
+agent B0 = Bool (t0,f0,g0,s0,u0);
+agent B1 = Bool (t1,f1,g1,s1,u1);
+agent Bk = Bool (tk,fk,gk,sk,uk)
+		 + Bool (fk,tk,gk,uk,sk);
+
+* -- Actual system --------------------------------------------------------
 
 set S = {   s0, g0, u0, t0, f0,
             s1, g1, u1, t1, f1,
             sk, gk, uk, tk, fk
         };
 
-agent System = ( Proc0 | Proc1 | Bool0 | Bool1 | Boolk ) \ S;
+agent System = ( P0 | P1 | B0 | B1 | Bk ) \ S;
 
