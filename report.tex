@@ -88,6 +88,16 @@
     \subsection{Encoding of the boolean variable abstraction}
     \label{sub:EncodeBool}
 
+        \begin{figure}[htbp]
+            \centering
+            \includegraphics[width=.5\textwidth]{pics/bool}
+            \label{pic:Bool}
+            \caption{
+                Unwound abstract behavior of a process emulating a boolean
+                variable
+            }
+        \end{figure}
+
         This abstraction consists in a simple process \Agent{Bool} which
         models the behavior of a boolean variable setted to False. It can
         be queried with a \CoAction{get} action (the \Action{false} action
@@ -110,6 +120,16 @@
         \end{verbatim}
 
     \subsection{Encoding of the Dekker protocol abstraction}
+
+        \begin{figure}[htbp]
+            \centering
+            \includegraphics[width=.5\textwidth]{pics/dekker}
+            \label{pic:Dekker}
+            \caption{
+                Encoding of an abstract process implementing the Dekker
+                protocol.
+            }
+        \end{figure}
 
         \subsubsection{Branching points}
         \label{subsub:BranchingPoints}
@@ -192,6 +212,7 @@
             Picture~\ref{pic:Dekker} shows a graphical representation of the
             Dekker protocol abstraction.
 
+\newpage
             \Note{
                 In the delivered definition the agents the actual
                 parametrized actions have been written into a short form
@@ -207,25 +228,6 @@
                     \end{itemize}
                 \end{multicols}
             }
-
-    \begin{figure}[Htbp]
-        \centering
-        \subfloat[Boolean variable process]{
-            \label{pic:Bool}
-            \includegraphics[width=.5\textwidth]{pics/bool}
-        }
-        \subfloat[Dekker process]{
-            \label{pic:Dekker}
-            \includegraphics[width=.5\linewidth]{pics/dekker}
-        }
-        \label{pic:Protocol}
-        \caption{
-            The graph of abstract behaviors. The right graph shows the
-            encoding of a process implementing the Dekker protocol, while
-            the left one shows the behavior of a process emulating a
-            boolean variable.
-        }
-    \end{figure}
 
     \subsection{Instantiation}
     \label{subsec:Instantiation}
@@ -288,23 +290,16 @@
 
             \end{itemize}
 
+\newpage
             Follows the code:
             \begin{verbatim}
-    agent P0 = Proc(set0, get0, unset0,
-                    set1, get1, unset1,
-                    setk, getk, unsetk,
-                    true0, false0,
-                    true1, false1,
-                    truek, falsek,
-                    exit0);
+    agent P0 = Proc(set0, get0, unset0, set1, get1, unset1,
+                    setk, getk, unsetk, true0, false0,
+                    true1, false1, truek, falsek, exit0);
 
-    agent P1 = Proc(set1, get1, unset1,
-                    set0, get0, unset0,
-                    unsetk, getk, setk,
-                    true1, false1,
-                    true0, false0,
-                    falsek, truek,
-                    exit1);
+    agent P1 = Proc(set1, get1, unset1, set0, get0, unset0,
+                    unsetk, getk, setk, true1, false1,
+                    true0, false0, falsek, truek, exit1);
         \end{verbatim}
 
     \subsection{Final system}
@@ -318,9 +313,8 @@
         restrict in order to allow only synchronizations between the
         processes:
         \begin{verbatim}
-    set S = {   s0, g0, u0, t0, f0,
-                s1, g1, u1, t1, f1,
-                sk, gk, uk, tk, fk
+    set S = {   s0, g0, u0, t0, f0, s1, g1, u1,
+                t1, f1, sk, gk, uk, tk, fk
             };
         \end{verbatim}
 
