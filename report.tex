@@ -60,11 +60,16 @@
     parametrization of \CCS{} entities extensively.
 
     The technique consists in defining abstract behaviors trough agents
-    whose actions are binded by formal parameters. Instantiation of an
-    abstract behavior into a concrete process consists in the definition
-    of a new agent, which behaves as the abstract one but provides, as
-    actual parameters, actions which allow interaction with other
+    whose formal parameters bind actions. Instantiation of an
+    abstract behavior into a concrete process can be achieved by defining
+    a new agent, which behaves as the abstract one, but provides as
+    actual parameters actions allowing interaction with other
     processes.
+
+    \Note{
+        For sake of readability, in this report I'm going to omit, where
+        possible, the formal parameters I actually used in the exercise.
+    }
 
 \section{The protocol}
 
@@ -92,15 +97,17 @@
         with inverted logic so that a \CoAction{unset} action restores the
         previous behavior.
 
+        In order to obtain logic inversion of the behavior I simply
+        swapped the position of the actual parameters in the definition:
+
+        Picture~\ref{pic:Bool} shows a graphical representation of the
+        unwound boolean abstraction, while the code used is the
+        following:
         \begin{verbatim}
     agent Bool (true, false, get, set, unset)
         = 'set.Bool(false, true, get, unset, set)
-        + 'get.false.Bool(true, false, get, set, unset)
-        ;
+        + 'get.false.Bool(true, false, get, set, unset) ;
         \end{verbatim}
-
-        Picture~\ref{pic:Bool} shows a graphical representation of the
-        unwound boolean abstraction.
 
     \subsection{Encoding of the Dekker protocol abstraction}
 
@@ -152,8 +159,8 @@
             well, provided that one of the two processes following the
             protocol accesses $k$ with a negated logic.
 
-            I adopted the same conventions of the provided algorithm for
-            process naming: the abstraction uses the $i$ index to name the
+            I adopted the same process naming conventions of the given
+            algorithm: the abstraction uses the $i$ index to name the
             process itself and $j$ index to name the other process. More
             on this topic in Subsection~\ref{subsec:Instantiation}.
 
@@ -171,7 +178,7 @@
             Finally the \emph{critical section} access is abstracted away
             (it's supposed to correspond to a sequence of $\tau$~actions),
             while the act of process $i$ exiting from it corresponds to
-            the \CCSCode{exiti} action.
+            the action named \CCSCode{exiti}.
 
             So far, after all this explanations, here we have the \CCS{}
             code:
@@ -201,7 +208,7 @@
                 \end{multicols}
             }
 
-    \begin{figure}[htbp]
+    \begin{figure}[Htbp]
         \centering
         \subfloat[Boolean variable process]{
             \label{pic:Bool}
@@ -223,26 +230,27 @@
     \subsection{Instantiation}
     \label{subsec:Instantiation}
 
-        As we saw in Section~\ref{sec:Intro}, the instantiation consists
-        in defining new agents which provide actual parameters to the
-        abstract ones.
+        As explained in Section~\ref{sec:Intro}, the instantiation
+        consists in defining new agents which provide actual parameters to
+        the abstract ones.
 
         \subsubsection{Boolean variable instantiation}
 
-            We need to define three boolean variables: \Agent{B0},
+            Three boolean variables are needed: \Agent{B0},
             \Agent{B1} and \Agent{Bk}.
 
-            Basing on the requirements and naming conventions explained in
-            Paragraph~\ref{subsub:ActualCode}, the parametrization is such
-            that actions produced by boolean variable $b_i$ have $i$ as
-            suffix:
+            Basing on the requirements and naming conventions shown in
+            Paragraph~\ref{subsub:ActualCode}, the parametrization must be
+            such that actions produced by boolean variable $b_i$ have $i$
+            as suffix:
             \begin{verbatim}
     agent B0 = Bool (true0, false0, get0, set0, unset0);
     agent B1 = Bool (true1, false1, get1, set1, unset1);
             \end{verbatim}
 
-            The same must hold for the $k$ variable, but here also we want to
-            have a non-deterministic assignment of the variable:
+            The same must hold for the $k$ variable, but here we also want
+            to have a non-deterministic assignment of the variable, since
+            we don't want to specify a process which should go first:
             \begin{verbatim}
     agent Bk = Bool (truek, falsek, getk, unsetk, setk)
              + Bool (falsek, truek, getk, setk, unsetk);
@@ -316,7 +324,7 @@
             };
         \end{verbatim}
 
-\section{Checking Safety}
+\section{Safety checks}
 
     For the \emph{safety} property we want to check that the two
     processes cannot simultaneously be in the critical section.
