@@ -50,3 +50,7 @@ set S = {   s0, g0, u0, t0, f0,
 
 agent System = ( P0 | P1 | B0 | B1 | Bk ) \ S;
 
+* -- Safety checks --------------------------------------------------------
+
+prop Safety = max( Z . ([x0]F | [x1]F) & [-]Z );
+

@@ -110,13 +110,13 @@
         In order to obtain logic inversion of the behavior I simply
         swapped the position of the actual parameters in the definition:
 
-        Picture~\ref{pic:Bool} shows a graphical representation of the
+        Figure~1 shows a graphical representation of the
         unwound boolean abstraction, while the code used is the
         following:
         \begin{verbatim}
     agent Bool (true, false, get, set, unset)
         = 'set.Bool(false, true, get, unset, set)
-        + 'get.false.Bool(true, false, get, set, unset) ;
+        + 'get.false.Bool(true, false, get, set, unset);
         \end{verbatim}
 
     \subsection{Encoding of the Dekker protocol abstraction}
@@ -209,7 +209,7 @@
     agent Proc3 = getk.( 'falsek.Proc3 + 'truek.seti.Proc1 );
             \end{verbatim}
 
-            Picture~\ref{pic:Dekker} shows a graphical representation of the
+            Figure~2 shows a graphical representation of the
             Dekker protocol abstraction.
 
 \newpage
@@ -335,7 +335,6 @@
     The checking has been achieved successfully:
     \begin{verbatim}
     Command: input "dekker.ccs";
-    Command: prop Safety = max( Z . ([x0]F | [x1]F) & [-]Z );
     Command: checkprop(System, Safety);
     true
 
